@@ -97,9 +97,12 @@ export const createClient = ({
 
             return bail(
               new Error(
-                `fetch API response status: ${response.status}${
-                  message ? `\n  message is \`${message}\`` : ''
-                }`,
+                [
+                  `Request failed.`,
+                  `  URL: ${response.url}`,
+                  `  Response status: ${response.status}`,
+                  `  Response data: ${await response.text()}`,
+                ].join('\n'),
               ),
             );
           }
@@ -110,14 +113,25 @@ export const createClient = ({
 
             return Promise.reject(
               new Error(
-                `fetch API response status: ${response.status}${
-                  message ? `\n  message is \`${message}\`` : ''
-                }`,
+                [
+                  `Request failed.`,
+                  `  URL: ${response.url}`,
+                  `  Response status: ${response.status}`,
+                  `  Response data: ${await response.text()}`,
+                ].join('\n'),
               ),
             );
           }
 
           if (requestInit?.method === 'DELETE') return;
+
+          console.log(
+            [
+              `Request succeeded.`,
+              `  URL: ${response.url}`,
+              `  Response status: ${response.status}`,
+            ].join('\n'),
+          );
 
           return response.json();
         } catch (error) {
