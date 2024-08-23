@@ -22,6 +22,7 @@
     "microCMS"
   ],
   "scripts": {
+    "prepare": "tsup",
     "build": "tsup",
     "postbuild": "mkdir -p ./dist/umd/ && cp -pR ./dist/iife/* ./dist/umd",
     "lint": "eslint ./src",
