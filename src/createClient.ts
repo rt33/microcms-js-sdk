@@ -67,17 +67,6 @@ export const createClient = ({
       queryString ? `?${queryString}` : ''
     }`;
 
-    const getMessageFromResponse = async (response: Response) => {
-      // Enclose `response.json()` in a try since it may throw an error
-      // Only return the `message` if there is a `message`
-      try {
-        const { message } = await response.json();
-        return message ?? null;
-      } catch (_) {
-        return null;
-      }
-    };
-
     return await retry(
       async (bail) => {
         let response;
@@ -93,15 +82,15 @@ export const createClient = ({
             response.status >= 400 &&
             response.status < 500
           ) {
-            const message = await getMessageFromResponse(response);
-
             return bail(
               new Error(
                 [
-                  `Request failed.`,
+                  '',
+                  'Request to the microCMS API failed.',
                   `  URL: ${response.url}`,
                   `  Response status: ${response.status}`,
                   `  Response data: ${await response.text()}`,
+                  '',
                 ].join('\n'),
               ),
             );
@@ -109,15 +98,15 @@ export const createClient = ({
 
           // If the response fails with any other status code, retry until the set number of attempts is reached.
           if (!response.ok) {
-            const message = await getMessageFromResponse(response);
-
             return Promise.reject(
               new Error(
                 [
-                  `Request failed.`,
+                  '',
+                  'Request to the microCMS API failed.',
                   `  URL: ${response.url}`,
                   `  Response status: ${response.status}`,
                   `  Response data: ${await response.text()}`,
+                  '',
                 ].join('\n'),
               ),
             );
@@ -125,13 +114,15 @@ export const createClient = ({
 
           if (requestInit?.method === 'DELETE') return;
 
-          console.log(
-            [
-              `Request succeeded.`,
-              `  URL: ${response.url}`,
-              `  Response status: ${response.status}`,
-            ].join('\n'),
-          );
+          // console.log(
+          //   [
+          //     '',
+          //     `Request to the microCMS API succeeded.`,
+          //     `  URL: ${response.url}`,
+          //     `  Response status: ${response.status}`,
+          //     '',
+          //   ].join('\n'),
+          // );
 
           return response.json();
         } catch (error) {
